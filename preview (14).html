@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alumni SMP PGRI II Depok 1993</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  color:white;
+  transition:0.3s;
+}
+
+/* LIGHT MODE */
+body.light{
+  background:#f1f5f9;
+  color:#111;
+}
+
+/* HEADER PROFESIONAL */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:15px 20px;
+  background:linear-gradient(90deg,#2563eb,#38bdf8);
+}
+
+/* LOGO */
+.logo{
+  width:70px;
+}
+
+/* TEXT HEADER */
+.header-center{
+  text-align:center;
+  flex:1;
+}
+
+.header-center h1{
+  font-family:'Poppins';
+  font-size:20px;
+}
+
+.header-center p{
+  font-size:12px;
+}
+
+/* BUTTON MODE */
+.toggle{
+  background:white;
+  color:black;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* CONTAINER */
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(10px);
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:20px;
+}
+
+body.light .card{
+  background:white;
+}
+
+/* INPUT */
+select, input, textarea, button{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  margin-top:10px;
+}
+
+/* BUTTON */
+button{
+  background:linear-gradient(90deg,#38bdf8,#6366f1);
+  color:white;
+  cursor:pointer;
+}
+
+/* RESULT */
+.result{
+  margin-top:10px;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.1);
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+}
+
+.member{
+  background:rgba(255,255,255,0.1);
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+}
+
+.member img{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+}
+
+/* KOMENTAR */
+.comment{
+  background:rgba(255,255,255,0.1);
+  padding:10px;
+  border-radius:10px;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <!-- KIRI -->
+  <img src="logo.png" class="logo">
+
+  <!-- TENGAH -->
+  <div class="header-center">
+    <h1>Alumni SMP PGRI II Depok</h1>
+    <p>Jalan Letnan Hatta Sukirman Depok II Tengah</p>
+    <p>Angkatan 1993 • Tetap Solid</p>
+  </div>
+
+  <!-- KANAN -->
+  <button class="toggle" onclick="toggleMode()">🌙</button>
+</header>
+
+<div class="container">
+
+<!-- HOROSKOP -->
+<div class="card">
+  <h2>🔮 Ramalan Alumni Hari Ini</h2>
+  <input id="namaUser" placeholder="Masukkan nama kamu">
+  <select id="zodiak">
+    <option value="">Pilih Zodiak</option>
+    <option>Aries</option><option>Taurus</option><option>Gemini</option>
+    <option>Cancer</option><option>Leo</option><option>Virgo</option>
+    <option>Libra</option><option>Scorpio</option><option>Sagittarius</option>
+    <option>Capricorn</option><option>Aquarius</option><option>Pisces</option>
+  </select>
+  <button onclick="ramal()">Lihat Ramalan</button>
+  <div class="result" id="hasil">Ramalan muncul di sini...</div>
+</div>
+
+<!-- DATA ALUMNI -->
+<div class="card">
+  <h2>Data Alumni</h2>
+  <div class="grid" id="listAlumni"></div>
+</div>
+
+<!-- KOMENTAR -->
+<div class="card">
+  <h2>Komentar</h2>
+  <input id="namaKomentar" placeholder="Nama">
+  <textarea id="isiKomentar" placeholder="Komentar..."></textarea>
+  <button onclick="kirimKomentar()">Kirim</button>
+  <div id="listKomentar"></div>
+</div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "API_KEY_KAMU",
+  authDomain: "PROJECT.firebaseapp.com",
+  databaseURL: "https://PROJECT.firebaseio.com",
+  projectId: "PROJECT",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+/* MODE */
+function toggleMode(){
+  document.body.classList.toggle("light");
+}
+
+/* HOROSKOP */
+const dataRamalan = {
+  Aries:"Hari penuh energi!",
+  Taurus:"Rezeki lancar.",
+  Gemini:"Banyak komunikasi.",
+  Cancer:"Jaga perasaan.",
+  Leo:"Bersinar hari ini!",
+  Virgo:"Detail membawa sukses.",
+  Libra:"Cari keseimbangan.",
+  Scorpio:"Intuisi kuat.",
+  Sagittarius:"Petualangan menanti.",
+  Capricorn:"Kerja keras terbayar.",
+  Aquarius:"Ide kreatif muncul.",
+  Pisces:"Ikuti hati."
+};
+
+function ramal(){
+  const nama = document.getElementById("namaUser").value;
+  const z = document.getElementById("zodiak").value;
+  const hasil = document.getElementById("hasil");
+
+  if(!nama || !z){
+    hasil.innerHTML = "Isi nama & zodiak dulu!";
+    return;
+  }
+
+  hasil.innerHTML = `<b>${nama}</b> (${z})<br>${dataRamalan[z]}`;
+}
+
+/* ALUMNI */
+function tampilkanAlumni(){
+  db.ref('alumni').on('value', (snap)=>{
+    let data = snap.val();
+    let el = document.getElementById('listAlumni');
+    el.innerHTML='';
+    if(data){
+      for(let id in data){
+        el.innerHTML += `
+        <div class="member">
+          <img src="${data[id].foto || 'https://via.placeholder.com/80'}">
+          <h4>${data[id].nama}</h4>
+          <p>${data[id].kota}</p>
+        </div>`;
+      }
+    }
+  });
+}
+
+/* KOMENTAR */
+function kirimKomentar(){
+  const nama = document.getElementById('namaKomentar').value;
+  const isi = document.getElementById('isiKomentar').value;
+  if(!nama || !isi) return alert('Isi dulu!');
+
+  db.ref('komentar').push({
+    nama, isi, waktu:new Date().toLocaleString()
+  });
+
+  document.getElementById('namaKomentar').value='';
+  document.getElementById('isiKomentar').value='';
+}
+
+function tampilkanKomentar(){
+  db.ref('komentar').on('value', (snap)=>{
+    let data = snap.val();
+    let el = document.getElementById('listKomentar');
+    el.innerHTML='';
+    if(data){
+      for(let id in data){
+        el.innerHTML += `
+        <div class="comment">
+          <b>${data[id].nama}</b><br>
+          <small>${data[id].waktu}</small>
+          <p>${data[id].isi}</p>
+        </div>`;
+      }
+    }
+  });
+}
+
+tampilkanAlumni();
+tampilkanKomentar();
+</script>
+
+</body>
+</html>
